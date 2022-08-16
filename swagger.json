@@ -42,7 +42,7 @@
         },
         "summary": "List People",
         "description": "List people in your organization. For most users, either the email or displayName parameter is required. Admin users can omit these fields and list all users in their organization.",
-        "operationId": "getPeople",
+        "operationId": "GetPeople",
         "parameters": [
           {
             "name": "email",
@@ -97,7 +97,7 @@
         },
         "summary": "Get My Own Details",
         "description": "Show the profile for the authenticated user. This is the same as GET /people/{personId} using the Person ID associated with your Auth token.",
-        "operationId": "getMyOwnDetails",
+        "operationId": "GetMyOwnDetails",
         "parameters": []
       }
     },
@@ -122,7 +122,7 @@
         },
         "summary": "Get Person Details",
         "description": "Shows details for a person, by ID.\n\nResponse properties associated with a user's presence status, such as status or lastActivity, will only be displayed for people within your organization or an organization you manage.",
-        "operationId": "getPersonById",
+        "operationId": "GetPersonById",
         "parameters": [
           {
             "name": "personId",
@@ -163,7 +163,7 @@
         },
         "summary": "List Rooms",
         "description": "List rooms.\nThe title of the room for 1:1 rooms will be the display name of the other person.\nBy default, lists rooms to which the authenticated user belongs.",
-        "operationId": "getRooms",
+        "operationId": "GetRooms",
         "parameters": [
           {
             "name": "teamId",
@@ -216,7 +216,7 @@
         },
         "summary": "Create a Room",
         "description": "Creates a room. The authenticated user is automatically added as a member of the room.",
-        "operationId": "postRoom",
+        "operationId": "PostRoom",
         "parameters": [
           {
             "name": "body",
@@ -273,7 +273,7 @@
         },
         "summary": "Get Room Details",
         "description": "Shows details for a room, by ID.\nThe title of the room for 1:1 rooms will be the display name of the other person.\nSpecify the room ID in the roomId parameter in the URI.",
-        "operationId": "getRoomById",
+        "operationId": "GetRoomById",
         "parameters": [
           {
             "name": "roomId",
@@ -301,7 +301,7 @@
         },
         "summary": "Delete a Room",
         "description": "Deletes a room, by ID. Deleted rooms cannot be recovered.\nDeleting a room that is part of a team will archive the room instead.\nSpecify the room ID in the roomId parameter in the URI.",
-        "operationId": "deleteRoom",
+        "operationId": "DeleteRoom",
         "parameters": [
           {
             "name": "roomId",
@@ -339,7 +339,7 @@
         },
         "summary": "List Messages",
         "description": "Lists all messages in a room. Each message will include content attachments if present.\nThe list sorts the messages in descending order by creation date.",
-        "operationId": "getMessages",
+        "operationId": "GetMessages",
         "parameters": [
           {
             "name": "roomId",
@@ -409,7 +409,7 @@
         },
         "summary": "Create a Message",
         "description": "Post a plain text or [rich text](https://developer.webex.com/docs/api/basics#formatting-messages) message, and optionally, a [file attachment](https://developer.webex.com/docs/api/v1/messages/docs/basics#message-attachments) attachment, to a room.\n\nThe files parameter is an array, which accepts multiple values to allow for future expansion, but currently only one file may be included with the message. File previews are only rendered for attachments of 1MB or less.",
-        "operationId": "postMessage",
+        "operationId": "PostMessage",
         "parameters": [
           {
             "name": "body",
@@ -476,7 +476,7 @@
         },
         "summary": "Get Message Details",
         "description": "Shows details for a message, by message ID.\nSpecify the message ID in the messageId parameter in the URI.",
-        "operationId": "getMessageById",
+        "operationId": "GetMessageById",
         "parameters": [
           {
             "name": "messageId",
@@ -504,7 +504,7 @@
         },
         "summary": "Delete a Message",
         "description": "Deletes a message, by message ID.\nSpecify the message ID in the messageId parameter in the URI.",
-        "operationId": "deleteMessage",
+        "operationId": "DeleteMessage",
         "parameters": [
           {
             "name": "messageId",
@@ -560,7 +560,7 @@
         },
         "summary": "List Memberships",
         "description": "Lists all room memberships. By default, lists memberships for rooms to which the authenticated user belongs.\n\nUse query parameters to filter the response.\n\nUse roomId to list memberships for a room, by ID.\n\nNote: For moderated team spaces, the list of memberships will include only the space moderators if the user is a team member but not a direct participant of the space.\n\nUse either personId or personEmail to filter the results. The roomId parameter is required when using these parameters.",
-        "operationId": "getMemberships",
+        "operationId": "GetMemberships",
         "parameters": [
           {
             "name": "roomId",
@@ -613,7 +613,7 @@
         },
         "summary": "Create a Membership",
         "description": "Add someone to a room by Person ID or email address; optionally making them a moderator.",
-        "operationId": "postMembership",
+        "operationId": "PostMembership",
         "parameters": [
           {
             "name": "body",
@@ -669,7 +669,7 @@
         },
         "summary": "Get Membership Details",
         "description": "Get details for a membership by ID.\nSpecify the membership ID in the membershipId URI parameter.",
-        "operationId": "getMembershipById",
+        "operationId": "GetMembershipById",
         "parameters": [
           {
             "name": "membershipId",
