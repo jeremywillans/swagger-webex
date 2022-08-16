@@ -1,6 +1,6 @@
 # swagger-webex
 
-Swagger Specification for Webex Developer APIS
+Swagger Specification for Webex Developer API Endpoints
 
 This swagger specification file has been written for use in [Power Automate](https://make.powerautomate.com) for developing flows using an authentication key instead of OAuth (i.e. Bot Accounts)
 
