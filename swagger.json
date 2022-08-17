@@ -864,8 +864,9 @@
           "description": "The organization ID of the person."
         },
         "isModerator": {
-          "type": "string",
-          "description": "Whether or not the participant is a room moderator."
+          "type": "boolean",
+          "description": "Whether or not the participant is a room moderator.",
+          "default": false
         },
         "roomType": {
           "type": "string",
