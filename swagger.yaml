@@ -595,7 +595,7 @@ paths:
         Deletes a membership by ID.
 
         Specify the membership ID in the membershipId URI parameter.
-      operationId: deleteMembership
+      operationId: DeleteMembership
       parameters:
         - name: membershipId
           in: path
