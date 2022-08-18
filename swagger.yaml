@@ -1,0 +1,762 @@
+swagger: '2.0'
+info:
+  title: Webex Bot
+  description: >-
+    This custom Webex Bot connector allowing interacting with the Webex APIs
+    using a an API Token (typically used with a Bot Account).
+
+
+    **Note:** The API key for this connector must be prefixed with **"Bearer "**
+    otherwise it will not be valid and return a 401 Error.
+  version: '1.0'
+host: webexapis.com
+basePath: /
+schemes:
+  - https
+consumes: []
+produces: []
+paths:
+  /v1/people:
+    get:
+      tags:
+        - people
+      responses:
+        '200':
+          description: Successful request with body content.
+          schema:
+            type: object
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: '#/definitions/Person'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          $ref: '#/responses/NotFoundError'
+      summary: List People
+      description: >-
+        List people in your organization. For most users, either the email or
+        displayName parameter is required. Admin users can omit these fields and
+        list all users in their organization.
+      operationId: GetPeople
+      parameters:
+        - name: email
+          in: query
+          required: false
+          type: string
+          description: >-
+            List people with this email address. For non-admin requests, either
+            this or displayName are required. With the exception of partner
+            admins and a managed org relationship, people lookup by email is
+            only available for users in the same org.
+        - name: displayName
+          in: query
+          required: false
+          type: string
+          description: >-
+            List people whose name starts with this string. For non-admin
+            requests, either this or email are required.
+        - name: id
+          in: query
+          required: false
+          type: string
+          description: >-
+            List people by ID. Accepts up to 85 person IDs separated by commas.
+            If this parameter is provided then presence information (such as the
+            lastActivity or status properties) will not be included in the
+            response.
+        - name: max
+          in: query
+          required: false
+          type: integer
+          default: 100
+          description: >-
+            Limit the maximum number of rooms in the response. Value must be
+            between 1 and 1000, inclusive.
+  /v1/people/me:
+    get:
+      tags:
+        - people
+      responses:
+        '200':
+          description: Successful request with body content.
+          schema:
+            $ref: '#/definitions/Person'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          $ref: '#/responses/NotFoundError'
+      summary: Get My Own Details
+      description: >-
+        Show the profile for the authenticated user. This is the same as GET
+        /people/{personId} using the Person ID associated with your Auth token.
+      operationId: GetMyOwnDetails
+      parameters: []
+  /v1/people/{personId}:
+    get:
+      tags:
+        - people
+      responses:
+        '200':
+          description: Successful request with body content.
+          schema:
+            $ref: '#/definitions/Person'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          $ref: '#/responses/NotFoundError'
+      summary: Get Person Details
+      description: >-
+        Shows details for a person, by ID.
+
+
+        Response properties associated with a user's presence status, such as
+        status or lastActivity, will only be displayed for people within your
+        organization or an organization you manage.
+      operationId: GetPersonById
+      parameters:
+        - name: personId
+          in: path
+          required: true
+          type: string
+          description: A unique identifier for the person.
+  /v1/rooms:
+    get:
+      tags:
+        - rooms
+      responses:
+        '200':
+          description: Successful request with body content.
+          schema:
+            type: object
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: '#/definitions/Room'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          $ref: '#/responses/NotFoundError'
+      summary: List Rooms
+      description: >-
+        List rooms.
+
+        The title of the room for 1:1 rooms will be the display name of the
+        other person.
+
+        By default, lists rooms to which the authenticated user belongs.
+      operationId: GetRooms
+      parameters:
+        - name: teamId
+          in: query
+          required: false
+          type: string
+          description: List rooms associated with a team, by ID.
+        - name: type
+          in: query
+          required: false
+          type: string
+          description: |-
+            List rooms by type.
+            *Possible values: direct, group*
+        - name: sortBy
+          in: query
+          required: false
+          type: string
+          description: 'Sort results. *Possible values: id, lastactivity, created*'
+        - name: max
+          in: query
+          required: false
+          type: integer
+          default: 100
+          description: >-
+            Limit the maximum number of rooms in the response. Value must be
+            between 1 and 1000, inclusive.
+    post:
+      tags:
+        - rooms
+      responses:
+        '200':
+          description: Successful request with body content.
+          schema:
+            $ref: '#/definitions/Room'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          $ref: '#/responses/NotFoundError'
+      summary: Create a Room
+      description: >-
+        Creates a room. The authenticated user is automatically added as a
+        member of the room.
+      operationId: PostRoom
+      parameters:
+        - name: body
+          in: body
+          required: false
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+                description: A user-friendly name for the room.
+              teamId:
+                type: string
+                description: The ID for the team with which this room is associated.
+              isLocked:
+                type: boolean
+                description: >-
+                  Set the space as locked/moderated and the creator becomes a
+                  moderator.
+                default: false
+              isAnnouncementOnly:
+                type: boolean
+                description: Sets the space into Announcement Mode.
+                default: false
+            required:
+              - title
+  /v1/rooms/{roomId}:
+    get:
+      tags:
+        - rooms
+      responses:
+        '200':
+          description: Successful request with body content.
+          schema:
+            $ref: '#/definitions/Room'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          $ref: '#/responses/NotFoundError'
+      summary: Get Room Details
+      description: >-
+        Shows details for a room, by ID.
+
+        The title of the room for 1:1 rooms will be the display name of the
+        other person.
+
+        Specify the room ID in the roomId parameter in the URI.
+      operationId: GetRoomById
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          type: string
+          description: The unique identifier for the room.
+    delete:
+      tags:
+        - rooms
+      responses:
+        '204':
+          $ref: '#/responses/NoContent'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          $ref: '#/responses/NotFoundError'
+      summary: Delete a Room
+      description: |-
+        Deletes a room, by ID. Deleted rooms cannot be recovered.
+        Deleting a room that is part of a team will archive the room instead.
+        Specify the room ID in the roomId parameter in the URI.
+      operationId: DeleteRoom
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          type: string
+          description: The unique identifier for the room.
+  /v1/messages:
+    get:
+      tags:
+        - messages
+      responses:
+        '200':
+          description: Successful request with body content.
+          schema:
+            type: object
+            properties:
+              items:
+                $ref: '#/definitions/Message'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          $ref: '#/responses/NotFoundError'
+      summary: List Messages
+      description: >-
+        Lists all messages in a room. Each message will include content
+        attachments if present.
+
+        The list sorts the messages in descending order by creation date.
+      operationId: GetMessages
+      parameters:
+        - name: roomId
+          in: query
+          required: true
+          type: string
+          description: List messages in a room, by ID.
+        - name: parentId
+          in: query
+          required: false
+          type: string
+          description: List messages with a parent, by ID.
+        - name: mentionedPeople
+          in: query
+          required: false
+          type: array
+          items:
+            type: string
+          description: >-
+            List messages with these people mentioned, by ID. Use me as a
+            shorthand for the current API user. Only me or the person ID of the
+            current user may be specified. Bots must include this parameter to
+            list messages in group rooms (spaces).
+        - name: before
+          in: query
+          required: false
+          type: string
+          description: List messages sent before a date and time.
+        - name: beforeMessage
+          in: query
+          required: false
+          type: string
+          description: List messages sent before a message, by ID.
+        - name: max
+          in: query
+          required: false
+          type: integer
+          default: 50
+          description: Limit the maximum number of messages in the response.
+    post:
+      tags:
+        - messages
+      responses:
+        '200':
+          description: Successful request with body content.
+          schema:
+            $ref: '#/definitions/Message'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          $ref: '#/responses/NotFoundError'
+      summary: Create a Message
+      description: >-
+        Post a plain text or [rich
+        text](https://developer.webex.com/docs/api/basics#formatting-messages)
+        message, and optionally, a [file
+        attachment](https://developer.webex.com/docs/api/v1/messages/docs/basics#message-attachments)
+        attachment, to a room.
+
+
+        The files parameter is an array, which accepts multiple values to allow
+        for future expansion, but currently only one file may be included with
+        the message. File previews are only rendered for attachments of 1MB or
+        less.
+      operationId: PostMessage
+      parameters:
+        - name: body
+          in: body
+          required: false
+          schema:
+            type: object
+            properties:
+              roomId:
+                type: string
+                description: The room ID of the message.
+              parentId:
+                type: string
+                description: The parent message to reply to.
+              toPersonId:
+                type: string
+                description: >-
+                  The person ID of the recipient when sending a private 1:1
+                  message.
+              toPersonEmail:
+                type: string
+                description: >-
+                  The email address of the recipient when sending a private 1:1
+                  message.
+              text:
+                type: string
+                description: >-
+                  The message, in plain text. If markdown is specified this
+                  parameter may be optionally used to provide alternate text for
+                  UI clients that do not support rich text. The maximum message
+                  length is 7439 bytes.
+              markdown:
+                type: string
+                description: >-
+                  The message, in Markdown format. The maximum message length is
+                  7439 bytes.
+              files:
+                type: array
+                items:
+                  type: string
+                description: >-
+                  The public URL to a binary file to be posted into the room.
+                  Only one file is allowed per message. Uploaded files are
+                  automatically converted into a format that all Webex clients
+                  can render.
+  /v1/messages/{messageId}:
+    get:
+      tags:
+        - messages
+      responses:
+        '200':
+          description: Successful request with body content.
+          schema:
+            $ref: '#/definitions/Message'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          $ref: '#/responses/NotFoundError'
+      summary: Get Message Details
+      description: |-
+        Shows details for a message, by message ID.
+        Specify the message ID in the messageId parameter in the URI.
+      operationId: GetMessageById
+      parameters:
+        - name: messageId
+          in: path
+          required: true
+          type: string
+          description: The unique identifier for the message.
+    delete:
+      tags:
+        - messages
+      responses:
+        '204':
+          $ref: '#/responses/NoContent'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          $ref: '#/responses/NotFoundError'
+      summary: Delete a Message
+      description: |-
+        Deletes a message, by message ID.
+        Specify the message ID in the messageId parameter in the URI.
+      operationId: DeleteMessage
+      parameters:
+        - name: messageId
+          in: path
+          required: true
+          type: string
+          description: The unique identifier for the message.
+  /v1/memberships:
+    get:
+      tags:
+        - memberships
+      responses:
+        '200':
+          description: Successful request with body content.
+          schema:
+            type: object
+            properties:
+              items:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: A unique identifier for the membership.
+                      title: membershipId
+                    personId:
+                      type: string
+                      description: The person ID.
+                    personEmail:
+                      type: string
+                      description: The email address of the person.
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          $ref: '#/responses/NotFoundError'
+      summary: List Memberships
+      description: >-
+        Lists all room memberships. By default, lists memberships for rooms to
+        which the authenticated user belongs.
+
+
+        Use query parameters to filter the response.
+
+
+        Use roomId to list memberships for a room, by ID.
+
+
+        Note: For moderated team spaces, the list of memberships will include
+        only the space moderators if the user is a team member but not a direct
+        participant of the space.
+
+
+        Use either personId or personEmail to filter the results. The roomId
+        parameter is required when using these parameters.
+      operationId: GetMemberships
+      parameters:
+        - name: roomId
+          in: query
+          required: false
+          type: string
+          description: List memberships associated with a room, by ID.
+        - name: personId
+          in: query
+          required: false
+          type: string
+          description: >-
+            List memberships associated with a person, by ID. The roomId
+            parameter is required when using this parameter.
+        - name: personEmail
+          in: query
+          required: false
+          type: string
+          description: >-
+            List memberships associated with a person, by email address. The
+            roomId parameter is required when using this parameter.
+        - name: max
+          in: query
+          required: false
+          type: integer
+          default: 100
+          description: Limit the maximum number of memberships in the response.
+    post:
+      tags:
+        - memberships
+      responses:
+        '200':
+          description: Successful request with body content.
+          schema:
+            $ref: '#/definitions/Membership'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          $ref: '#/responses/NotFoundError'
+      summary: Create a Membership
+      description: >-
+        Add someone to a room by Person ID or email address; optionally making
+        them a moderator.
+      operationId: PostMembership
+      parameters:
+        - name: body
+          in: body
+          required: false
+          schema:
+            type: object
+            properties:
+              roomId:
+                type: string
+                description: The room ID.
+              personId:
+                type: string
+                description: The person ID.
+              personEmail:
+                type: string
+                description: The email address of the person.
+              isModerator:
+                type: boolean
+                description: Whether or not the participant is a room moderator.
+                default: false
+            required:
+              - roomId
+  /v1/memberships/{membershipId}:
+    get:
+      tags:
+        - memberships
+      responses:
+        '200':
+          description: Successful request with body content.
+          schema:
+            $ref: '#/definitions/Membership'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          $ref: '#/responses/NotFoundError'
+      summary: Get Membership Details
+      description: |-
+        Get details for a membership by ID.
+        Specify the membership ID in the membershipId URI parameter.
+      operationId: GetMembershipById
+      parameters:
+        - name: membershipId
+          in: path
+          required: true
+          type: string
+          description: The unique identifier for the membership.
+    delete:
+      tags:
+        - memberships
+      responses:
+        '204':
+          $ref: '#/responses/NoContent'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          $ref: '#/responses/NotFoundError'
+      summary: Delete a Membership
+      description: |-
+        Deletes a membership by ID.
+
+        Specify the membership ID in the membershipId URI parameter.
+      operationId: deleteMembership
+      parameters:
+        - name: membershipId
+          in: path
+          required: true
+          type: string
+          description: The unique identifier for the membership.
+definitions:
+  Person:
+    type: object
+    properties:
+      id:
+        type: string
+        description: A unique identifier for the person.
+        title: personId
+      emails:
+        type: array
+        items:
+          type: string
+        description: The email addresses of the person.
+      displayName:
+        type: string
+        description: The full name of the person.
+      firstName:
+        type: string
+        description: The first name of the person.
+      lastName:
+        type: string
+        description: The last name of the person.
+  Room:
+    type: object
+    properties:
+      id:
+        type: string
+        description: A unique identifier for the room.
+        title: roomId
+      title:
+        type: string
+        description: A user-friendly name for the room.
+      type:
+        type: string
+        description: The room type.
+      isLocked:
+        type: boolean
+        default: false
+        description: Whether the room is moderated (locked) or not.
+      teamId:
+        type: string
+        description: The ID for the team with which this room is associated.
+      isAnnouncementOnly:
+        type: boolean
+        default: false
+        description: >-
+          Indicates when a space is in Announcement Mode where only moderators
+          can post messages
+  Message:
+    type: object
+    properties:
+      id:
+        type: string
+        description: A unique identifier for the room.
+        title: messageId
+      parentId:
+        type: string
+        description: The unique identifier for the parent message.
+      roomId:
+        type: string
+        description: The room ID of the message.
+      roomType:
+        type: string
+        description: The type of room.
+      text:
+        type: string
+        description: >-
+          The message, in plain text. If markdown is specified this parameter
+          may be optionally used to provide alternate text for UI clients that
+          do not support rich text.
+      markdown:
+        type: string
+        description: The message, in Markdown format.
+      html:
+        type: string
+        description: >-
+          The text content of the message, in HTML format. This read-only
+          property is used by the Webex clients.
+      files:
+        type: array
+        items:
+          type: string
+        description: >-
+          Public URLs for files attached to the message. For the supported media
+          types and the behavior of file uploads, see [Message
+          Attachments](https://developer.webex.com/docs/api/v1/messages/docs/basics#message-attachments).
+      personId:
+        type: string
+        description: The person ID of the message author.
+      personEmail:
+        type: string
+        description: The email address of the message author.
+      mentionedPeople:
+        type: array
+        items:
+          type: string
+        description: People IDs for anyone mentioned in the message.
+      mentionedGroups:
+        type: array
+        items:
+          type: string
+        description: Group names for the groups mentioned in the message.
+  Membership:
+    type: object
+    properties:
+      id:
+        type: string
+        description: A unique identifier for the room.
+        title: membershipId
+      roomId:
+        type: string
+        description: The room ID.
+      personId:
+        type: string
+        description: The person ID.
+      personEmail:
+        type: string
+        description: The email address of the person.
+      personDisplayName:
+        type: string
+        description: The display name of the person.
+      personOrgId:
+        type: string
+        description: The organization ID of the person.
+      isModerator:
+        type: boolean
+        description: Whether or not the participant is a room moderator.
+        default: false
+      roomType:
+        type: string
+        description: The type of room the membership is associated with.
+parameters: {}
+responses:
+  NoContent:
+    description: Successful request without body content.
+  UnauthorizedError:
+    description: >-
+      Authentication information is missing or invalid, ensure you added "Bearer
+      " to your API Key.
+    headers:
+      Authorization:
+        type: string
+        description: 'Format: "Bearer xxxxxxx"'
+  NotFoundError:
+    description: >-
+      The URI requested is invalid or the resource requested, such as a user,
+      does not exist.
+securityDefinitions:
+  API Key:
+    type: apiKey
+    in: header
+    name: Authorization
+security:
+  - API Key: []
+tags: []
+externalDocs:
+  description: Find out more about Webex APIs
+  url: https://developer.webex.com/docs
