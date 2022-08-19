@@ -4,6 +4,8 @@ Swagger Specification for Webex Developer API Endpoints
 
 This swagger specification file has been written for use in [Power Automate](https://make.powerautomate.com) for developing flows using an authentication key instead of OAuth (i.e. Bot Accounts)
 
+![swagger.png](swagger.png)
+
 The exposed API paths can be reviewed using the [Swagger Editor](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jeremywillans/swagger-webex/master/swagger.yaml)
 
 **Note:** The API key for this connector must be prefixed with "Bearer " otherwise it will not be valid and return a 401 Error.
