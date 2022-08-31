@@ -31,6 +31,12 @@
                   }
                 }
               }
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "Pagination link for next page of results"
+              }
             }
           },
           "401": {
@@ -49,7 +55,7 @@
             "in": "query",
             "required": false,
             "type": "string",
-            "description": "List people with this email address. For non-admin requests, either this or displayName are required. With the exception of partner admins and a managed org relationship, people lookup by email is only available for users in the same org."
+            "description": "List people with this email address. For non-admin requests, either this or *displayName* are required. With the exception of partner admins and a managed org relationship, people lookup by email is only available for users in the same org."
           },
           {
             "name": "displayName",
@@ -63,7 +69,14 @@
             "in": "query",
             "required": false,
             "type": "string",
-            "description": "List people by ID. Accepts up to 85 person IDs separated by commas. If this parameter is provided then presence information (such as the lastActivity or status properties) will not be included in the response."
+            "description": "List people by ID. Accepts up to 85 person IDs separated by commas. If this parameter is provided then presence information (such as the *lastActivity* or *status* properties) will not be included in the response."
+          },
+          {
+            "name": "orgId",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "List people in this organization. Only admin users of another organization (such as partners may use this parameter."
           },
           {
             "name": "max",
@@ -71,7 +84,14 @@
             "required": false,
             "type": "integer",
             "default": 100,
-            "description": "Limit the maximum number of rooms in the response. Value must be between 1 and 1000, inclusive."
+            "description": "Limit the maximum number of people in the response."
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Used in subsequent pagination requests to indicate the start of the next page of items. This identifier can be obtained from the link header of the previous request."
           }
         ]
       }
@@ -152,6 +172,12 @@
                   }
                 }
               }
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "Pagination link for next page of results"
+              }
             }
           },
           "401": {
@@ -193,6 +219,13 @@
             "type": "integer",
             "default": 100,
             "description": "Limit the maximum number of rooms in the response. Value must be between 1 and 1000, inclusive."
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Used in subsequent pagination requests to indicate the start of the next page of items. This identifier can be obtained from the link header of the previous request."
           }
         ]
       },
@@ -328,6 +361,12 @@
                   "$ref": "#/definitions/Message"
                 }
               }
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "Pagination link for next page of results"
+              }
             }
           },
           "401": {
@@ -386,6 +425,13 @@
             "type": "integer",
             "default": 50,
             "description": "Limit the maximum number of messages in the response."
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Used in subsequent pagination requests to indicate the start of the next page of items. This identifier can be obtained from the link header of the previous request."
           }
         ]
       },
@@ -525,29 +571,12 @@
           "200": {
             "description": "Successful request with body content.",
             "schema": {
-              "type": "object",
-              "properties": {
-                "items": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "id": {
-                        "type": "string",
-                        "description": "A unique identifier for the membership.",
-                        "title": "membershipId"
-                      },
-                      "personId": {
-                        "type": "string",
-                        "description": "The person ID."
-                      },
-                      "personEmail": {
-                        "type": "string",
-                        "description": "The email address of the person."
-                      }
-                    }
-                  }
-                }
+              "$ref": "#/definitions/Membership"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "Pagination link for next page of results"
               }
             }
           },
@@ -590,6 +619,13 @@
             "type": "integer",
             "default": 100,
             "description": "Limit the maximum number of memberships in the response."
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Used in subsequent pagination requests to indicate the start of the next page of items. This identifier can be obtained from the link header of the previous request."
           }
         ]
       },
