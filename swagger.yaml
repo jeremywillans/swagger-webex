@@ -306,7 +306,9 @@ paths:
             type: object
             properties:
               items:
-                $ref: '#/definitions/Message'
+                type: array
+                items:
+                  $ref: '#/definitions/Message'
           headers:
             link:
               type: string
@@ -491,7 +493,12 @@ paths:
         '200':
           description: Successful request with body content.
           schema:
-            $ref: '#/definitions/Membership'
+            type: object
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: '#/definitions/Membership'
           headers:
             link:
               type: string
